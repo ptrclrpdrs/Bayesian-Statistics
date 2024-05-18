@@ -1,0 +1,22 @@
+import numpy as np
+import pymc3 as pm
+# Generate some synthetic data
+np.random.seed(42)
+data = np.random.normal(loc=5, scale=2, size=100)
+# Specify the probabilistic model
+with pm.Model() as model:
+# Prior distribution for the mean
+mean = pm.Uniform('mean', lower=0, upper=10)
+# Likelihood (sampling distribution) of the data
+likelihood = pm.Normal('likelihood', mu=mean, sigma=2,
+observed=data)
+# Perform Bayesian inference
+trace = pm.sample(1000, tune=1000)
+# Predictive inference
+with model:
+
+# Sample from the posterior distribution of the mean
+posterior_samples = pm.sample_posterior_predictive(trace,
+samples=1000)
+# Extract predictions
+mean_predictions = posterior_samples['likelihood'].mean(axis=0)
